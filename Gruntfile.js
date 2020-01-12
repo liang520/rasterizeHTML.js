@@ -103,7 +103,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 options: {
-                    banner:'/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+                    banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
                         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
                         '* <%= pkg.homepage %>\n' +
                         '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
@@ -114,7 +114,7 @@ module.exports = function (grunt) {
             },
             types: {
                 options: {
-                    banner:'/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+                    banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
                         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
                         '* <%= pkg.homepage %>\n' +
                         '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
@@ -127,7 +127,7 @@ module.exports = function (grunt) {
         uglify: {
             dist: {
                 options: {
-                    banner:'/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+                    banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
                         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
                         '* <%= pkg.homepage %>\n' +
                         '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
@@ -139,7 +139,7 @@ module.exports = function (grunt) {
             },
             allinone: {
                 options: {
-                    banner:'/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+                    banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
                         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
                         '* <%= pkg.homepage %>\n' +
                         '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
@@ -176,11 +176,11 @@ module.exports = function (grunt) {
                 'test/**/*.js'
             ],
             options: {
-                pattern : /FIXME/g
+                pattern: /FIXME/g
             }
         },
     });
-
+    //加载任务插件
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -191,18 +191,21 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-umd');
 
+    //定义任务
     grunt.registerTask('deps', [
         'browserify:url',
         'browserify:sanedomparsererror',
         'browserify:inlineresources'
     ]);
 
+    //定义任务
     grunt.registerTask('test', [
         'jshint',
         'jasmine',
         'regex-check'
     ]);
 
+    //定义任务
     grunt.registerTask('build', [
         'concat:one',
         'umd',
@@ -212,6 +215,7 @@ module.exports = function (grunt) {
         'uglify'
     ]);
 
+    //定义任务
     grunt.registerTask('default', [
         'clean',
         'deps',

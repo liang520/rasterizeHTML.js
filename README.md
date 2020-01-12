@@ -1,38 +1,35 @@
-rasterizeHTML.js
-================
+# rasterizeHTML.js
 
 <a href="https://www.npmjs.org/package/rasterizehtml">
     <img src="https://badge.fury.io/js/rasterizehtml.svg"
         align="right" alt="NPM version" height="18">
 </a>
 
-Renders HTML into the browser's canvas.
+把 html 绘制到 canvas 上.
 
-See the [API](https://github.com/cburgmer/rasterizeHTML.js/wiki/API).
+使用文档的[API](https://github.com/cburgmer/rasterizeHTML.js/wiki/API).
 
-
-Install
--------
+## 安装
 
     $ npm install rasterizehtml
 
-Then include a script tag with `node_modules/rasterizehtml/dist/rasterizeHTML.allinone.js` or require through [browserify](https://github.com/substack/node-browserify).
+通过脚本引入 `node_modules/rasterizehtml/dist/rasterizeHTML.allinone.js` 或者通过 [browserify](https://github.com/substack/node-browserify)加载.
 
-Example
--------
+## 例子
 
-```js
+```javascript
 var canvas = document.getElementById("canvas");
-rasterizeHTML.drawHTML('Some ' +
-                       '<span style="color: green; font-size: 20px;">HTML</span>' +
-                       ' with an image <img src="someimg.png">',
-                       canvas);
+rasterizeHTML.drawHTML(
+  "Some " +
+    '<span style="color: green; font-size: 20px;">HTML</span>' +
+    ' with an image <img src="someimg.png">',
+  canvas
+);
 ```
 
-See [the examples page](https://github.com/cburgmer/rasterizeHTML.js/wiki/Examples). The code also [ships with examples](https://github.com/cburgmer/rasterizeHTML.js/tree/master/examples), make sure to run `npm test` first to compile the library.
+看 [这个例子](https://github.com/cburgmer/rasterizeHTML.js/wiki/Examples). 这个代码 [也有一些列子](https://github.com/cburgmer/rasterizeHTML.js/tree/master/examples), 确保首先执行了 `npm test` 去编译这个库.
 
-How does it work
-----------------
+## 怎么工作
 
 For security reasons rendering HTML into a canvas is severly limited. Firefox offers such a function via `ctx.drawWindow()`, but only with Chrome privileges (see https://developer.mozilla.org/en/Drawing_Graphics_with_Canvas).
 
@@ -40,8 +37,7 @@ As described in http://robert.ocallahan.org/2011/11/drawing-dom-content-to-canva
 
 In addition SVG is not allowed to link to external resources and so rasterizeHTML.js will load external images, fonts and stylesheets and store them inline via [data: URIs](http://en.wikipedia.org/wiki/Data_URI_scheme) (or inline style elements respectively).
 
-Limitations
------------
+## Limitations
 
 All resources (HTML page, CSS, images, fonts and JS) that are needed for drawing the page can only be loaded if from the [same origin](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Same_origin_policy_for_JavaScript), unless techniques like [CORS](http://enable-cors.org) are used. I.E. `drawURL()` can only load pages from the same domain as the current page and all draw methods can equally only embed styling and images from that domain.
 
@@ -53,15 +49,15 @@ Also the individual browsers still have some issues when rendering SVGs with emb
 
 [The full list of limitations is here](https://github.com/cburgmer/rasterizeHTML.js/wiki/Limitations).
 
-TypeScript
-----------
+## TypeScript
+
 Import type definitions as follows:
 
 ```ts
-import * as rasterizeHTML from 'rasterizehtml';
+import * as rasterizeHTML from "rasterizehtml";
 ```
-Development
------------
+
+## Development
 
 Run `npm test`. There's also a vagrant image that installs all necessary build dependencies.
 
@@ -69,8 +65,7 @@ For tests against individual browsers open `test/SpecRunner.html`, for integrati
 
 [![Build Status](https://travis-ci.org/cburgmer/rasterizeHTML.js.svg?branch=master)](https://travis-ci.org/cburgmer/rasterizeHTML.js)
 
-Where is it used?
------------------
+## Where is it used?
 
-* [CSS Critic](https://github.com/cburgmer/csscritic), a lightweight tool for regression testing of Cascading Style Sheets
-* ...
+- [CSS Critic](https://github.com/cburgmer/csscritic), a lightweight tool for regression testing of Cascading Style Sheets
+- ...

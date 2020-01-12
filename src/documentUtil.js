@@ -24,7 +24,7 @@ var documentUtil = (function () {
             ruleIdx = asArray(styleSheet.cssRules).indexOf(rule);
 
         // Exchange rule with the new text
-        styleSheet.insertRule(newRuleText, ruleIdx+1);
+        styleSheet.insertRule(newRuleText, ruleIdx + 1);
         styleSheet.deleteRule(ruleIdx);
     };
 
@@ -85,9 +85,9 @@ var documentUtil = (function () {
             if (matchingRules.length) {
                 matchingRules.forEach(function (rule) {
                     var newSelector = rule.selectorText.replace(new RegExp(selectorRegex, 'gi'),
-                                                             function (_, prefixMatch, selectorMatch) {
-                        return prefixMatch + caseInsensitiveReplaceFunc(selectorMatch);
-                    });
+                        function (_, prefixMatch, selectorMatch) {
+                            return prefixMatch + caseInsensitiveReplaceFunc(selectorMatch);
+                        });
 
                     if (newSelector !== rule.selectorText) {
                         updateRuleSelector(rule, newSelector);
@@ -124,7 +124,7 @@ var documentUtil = (function () {
             } else {
                 nonHtmlNodeNames[currentTagName] = true;
             }
-        } while(treeWalker.nextNode());
+        } while (treeWalker.nextNode());
 
         return Object.keys(htmlNodeNames).filter(function (tagName) {
             return !nonHtmlNodeNames[tagName];
