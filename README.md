@@ -77,6 +77,109 @@ import * as rasterizeHTML from "rasterizehtml";
 
 ## API
 
+- 绘制一个页面到 canvas 上
+
+```js
+rasterizeHTML.drawURL( url [, canvas] [, options] )
+```
+
+- 绘制一个 html 字符串到 canvas 上
+
+```js
+rasterizeHTML.drawHTML( html [, canvas] [, options] )
+```
+
+- 绘制一个 document 文档到 canvas 上
+
+```js
+rasterizeHTML.drawDocument( document [, canvas] [, options] )
+```
+
+#### 参数
+
+- 一个 URL
+- 一个 html 的字符串
+- document 的文档对象
+
+#### 参数配置选项
+
+- canvas 表示需要绘制到哪个的 canvas 节点
+- options 对象属性：
+  - width 视图的宽度，默认是 300
+  - height 视图的高度，默认是 200
+  - baseUrl html 文档中使用的资源基于这个链接来处理，默认为 null
+  - executeJs 如果设置成了 true，在绘制页面，挥着绘制 html 字符串的时候，他就会执行，然后等待 onload 事件之后，再绘制内容（绘制 document 文档不支持），默认为 false
+  - executeJsTimeout 将会在给定的时间之后，再停止执行 js，如果没有 js 执行，也会等待，默认是 0
+  - zoom 一个缩放展示内容的配置，[默认是 1](https://github.com/cburgmer/rasterizeHTML.js/wiki/Limitations)
+  - hover 该选择器会匹配一个模拟鼠标悬停的效果,默认为 null
+  - active 该选择器会匹配一个模拟鼠标激活的状态，默认为 null
+  - focus 该选择器会匹配一个模拟鼠标聚焦的状态，默认为 null
+  - target 该选择器会匹配一个模拟数据锚点点击的状态，默认为 null
+  - cache 允许微调缓存行为：
+    - 'none' 通过在每一个请求上加戳"?\_=[timestamp]"来让请求不会被缓存
+    - 'repeated' 强制对初始调用进行非缓存加载，同时允许浏览器对于相同的 URL 使用缓存
+    - 'all' 不会使用任何缓存清除功能（默认）
+- cacheBucket 一个对象保存库自己本身的内存缓存，只有在多次调用 API 并且 cache 设置了'none'以外的值，初始化是{}。
+
+#### 返回值
+
+所有的方法都返回一个 promise，只要这个内容被渲染了，它就是 fulfilled，如果渲染失败了，他就是返回 rejected 状态。它的使用模式基本如下：
+
+```javascript
+rasterizeHTML.drawURL(url, canvas, options)
+    .then(function success(renderResult) {
+         ...
+    }, function error(e) {
+        ...
+    });
+```
+
+#### 成功回调
+
+渲染成功之后的返回结果对象包含：
+
+- image 被渲染到 canvas 上的结果的图片，如果内容超出了给定的视图大小，那么图像将会有更大的尺寸
+- svg 呈现内容内部的 svg 表现形式
+- errors 下载失败的资源列表
+
+#### 失败回调
+
+在 error 函数接受到一个 e 的对象，由如下组成：
+
+```js
+{
+  message: "THE_MESSAGE",
+  originalError: obj
+}
+```
+
+这里的 message 可能会有其他几种情况：
+
+- "Unable to load page" 如果给定的 URL 不能通过 drawURL 绘制
+- "Error rendering page" 如果整个 document 渲染失败，就会出现这个错误
+- "Invalid source" 如果这个资源是无效的（更具体地说，不能转换为呈现 HTML 所需的中间 XHTML 格式）
+
+#### 资源失败
+
+这个资源失败的的列表出错结构如下：
+
+```js
+{
+  resourceType: "TYPE_OF_RESOURCE",
+  url: "THE_FAILED_URL",
+  msg: "A_HUMAN_READABLE_MSG"
+}
+```
+
+资源类型：
+
+- 对于图片—— `<img href="">`或者`<input type="image" src="">`
+- 对于样式—— `<link rel="stylesheet" href="">`或者`@import url("");`
+- 对于背景图—— `background-image: url("");`
+- 对于字体文件—— `@font-face { src: url("") }`
+- 对于脚本—— `<script src="">`
+- 脚本执行的过程的错误信息
+
 ## 不同浏览器中的一些问题
 
 #### Firfox
@@ -99,3 +202,42 @@ import * as rasterizeHTML from "rasterizehtml";
 - `<style>`标签在 SVG 中在 Safari 里面，[它的 sheet 属性是 undefined](https://bugs.webkit.org/show_bug.cgi?id=163324),基于 hack 的方式修复了这个[bug](https://github.com/cburgmer/rasterizeHTML.js/issues/158)
 
 ## 限制
+
+对于 rasterizaHTML.js 使用的限制的原因是由于不同浏览器具体实现上的一些 bug。
+
+### 一般限制
+
+- 所有需要在绘制的时候使用到的资源（html 页面、css、images、fonts 和 js）要么是来自同源的，要么是用过 CORS 来请求的
+- 不会加载额外通过 js 来创建的资源（比如：懒加载图片）。如果呀使用这些资源，同意通过内联的方式来处理
+- 配置项：hover、active、focus 只能够用于用户特指的伪类样式，而不是用户代理自己配置的。比如在 chorme 中的 button 边框或者在 Firefox 处于活跃状态的时候的左内边距的距离
+- 操作 ScrollTop 或者类似的属性将不会影响可视化区域的位置
+
+### 当前不支持的 html
+
+- canvas 的内容和实际大小都不能都不能正确的渲染
+- 不支持 iframes
+- 通过内联样式定义的外部的背景图片也不能渲染（背景图内联处理）
+- 通过 srcset 定义的图片，不能被渲染
+- 通过 media 查询定义的 link 标签会被忽略 `<link rel="stylesheet" media="..." />`
+- 通过 media 查询动态 import 进来的规则会被忽略`@import url("...") screen and (orientation:landscape);`
+
+### 浏览器的问题
+
+#### 所有浏览器
+
+- 设置在 HTML 或者 BODY 元素上的背景图是应该铺满整个 canvas，但是目前只是实现了文档实际自身的大小，[没有铺满全部](https://bugzilla.mozilla.org/show_bug.cgi?id=1143405)。
+
+#### Webkit origin
+
+- zoom 配置选项不能够正常的生成[叠层上下文](https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Understanding_z_index/The_stacking_context)，比如由于一些[bug](https://bugs.chromium.org/p/chromium/issues/detail?id=467308),造成一些属性错位（position、transform、opacity）
+- [复合变换不能够正确的渲染](https://github.com/cburgmer/rasterizeHTML.js/issues/85)
+- Chrome＆Safari 使用小写的标记名称选择器，可匹配任何独立于字母大小写的元素。但是，Firefox 仅对 HTML 元素不区分大小写。
+
+#### Safari
+
+- webkit 不能获取 canvas 上的内容
+- 在一些不清楚的情况下，不会加载图像（img 和 background-img）,预加载相关图像可能会有帮助，比如，[将背景图像作为高度 0 的 div](https://github.com/cburgmer/rasterizeHTML.js/issues/81)
+
+#### IE
+
+- 由于缺少对 SVG 的`<forrignObject>`支持，因此，基本上没有支持
